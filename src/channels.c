@@ -10,6 +10,7 @@
 
 #define CH_CLOSED 1 << 0
 #define CH_BOUNDED 1 << 1
+
 typedef struct channel_t {
   size_t item_size;
   size_t count;
@@ -28,7 +29,7 @@ channel_t *channel_create(size_t item_size, size_t capacity) {
 
   ch->item_size = item_size;
   ch->capacity = capacity;
-  ch->flags = (capacity > 0) ? 0 : CH_BOUNDED;
+  ch->flags = (capacity > 0) ? CH_BOUNDED : 0;
   ch->count = 0;
   ch->recv_ptr = 0;
   ch->send_ptr = 0;
@@ -50,6 +51,7 @@ channel_t *channel_create(size_t item_size, size_t capacity) {
 
   return ch;
 }
+
 bool channel_send(channel_t *ch, const void *value) {
   pthread_mutex_lock(&ch->mu);
   if (ch->flags & CH_CLOSED) {
@@ -66,14 +68,28 @@ bool channel_send(channel_t *ch, const void *value) {
       return false;
     }
   } else if (ch->capacity <= ch->count) {
-    ch->capacity *= 2;
-    size_t new_size = ch->capacity * ch->item_size;
-    void *new_queue = realloc(ch->queue, new_size);
+    size_t new_cap = ch->capacity * 2;
+    void *new_queue = malloc(new_cap * ch->item_size);
     if (new_queue == NULL) {
       pthread_mutex_unlock(&ch->mu);
       return false;
     }
+    if (ch->recv_ptr < ch->send_ptr) {
+      memcpy(new_queue, (char *)ch->queue + ch->recv_ptr * ch->item_size,
+             ch->count * ch->item_size);
+    } else {
+      size_t start = ch->capacity - ch->recv_ptr;
+      memcpy(new_queue, (char *)ch->queue + ch->recv_ptr * ch->item_size,
+             start * ch->item_size);
+      memcpy((char *)new_queue + start * ch->item_size, ch->queue,
+             ch->send_ptr * ch->item_size);
+    }
+
+    free(ch->queue);
     ch->queue = new_queue;
+    ch->capacity = new_cap;
+    ch->recv_ptr = 0;
+    ch->send_ptr = ch->count;
   }
   void *slot = (char *)ch->queue + (ch->item_size * ch->send_ptr);
   memcpy(slot, value, ch->item_size);
