@@ -39,7 +39,7 @@ channel_t *channel_create(size_t item_size, size_t capacity) {
   pthread_cond_init(&ch->send_cond, NULL);
 
   if (capacity == 0) {
-    ch->capacity = 1 << 12;
+    ch->capacity = 1 << 4;
   }
 
   ch->queue = calloc(ch->capacity, item_size);
