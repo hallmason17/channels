@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra -Werror -std=c11 -pthread -g
+CFLAGS = -Wall -Wextra -Werror -std=c11 -pthread
 OPTFLAGS = -O2
 DEBUGFLAGS = -O0 -DDEBUG -fsanitize=address -fsanitize=undefined
 

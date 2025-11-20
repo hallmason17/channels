@@ -110,7 +110,7 @@ void bench_bounded_vs_unbounded(void) {
   printf("---------------------|-------------------\n");
 
   const size_t NUM_ITEMS = 100000000;
-  const int NUM_PRODUCERS = 3;
+  const int NUM_PRODUCERS = 1;
 
   // Bounded
   {
@@ -222,7 +222,7 @@ void bench_item_sizes(void) {
   printf("----------------|--------------------|----------------\n");
 
   const size_t NUM_ITEMS = 50000000;
-  const int NUM_PRODUCERS = 3;
+  const int NUM_PRODUCERS = 1;
   const size_t CAPACITY = 10000;
 
   size_t sizes[] = {4, 8, 64, 256, 1024, 4096};
