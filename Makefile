@@ -39,7 +39,7 @@ $(BUILD_DIR)/tests.o: $(TEST_SOURCES) $(HEADERS) | $(BUILD_DIR)
 $(TEST_BIN): $(OBJECTS) $(TEST_OBJECTS) | $(BIN_DIR)
 	$(CC) $(CFLAGS) $(OPTFLAGS) $^ -o $@
 
-# Build benchmark (if you have benchmarks/benchmark.c)
+# Build benchmark
 $(BENCHMARK_BIN): $(OBJECTS) benchmarks/benchmark.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $(OPTFLAGS) -I$(SRC_DIR) benchmarks/benchmark.c $(OBJECTS) -o $@
 
